@@ -37,6 +37,7 @@ class BodyCell: UITableViewCell {
 
         textView.delegate = self
         contentView.addSubview(textView)
+        contentView.backgroundColor = .clear
         contentView.topAnchor.constraint(equalTo: textView.topAnchor).isActive = true
         contentView.bottomAnchor.constraint(equalTo: textView.bottomAnchor).isActive = true
         contentView.leadingAnchor.constraint(equalTo: textView.leadingAnchor).isActive = true

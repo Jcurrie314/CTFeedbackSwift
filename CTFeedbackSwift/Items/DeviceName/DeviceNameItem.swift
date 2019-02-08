@@ -5,7 +5,7 @@
 
 import Foundation
 
-public struct DeviceNameItem: FeedbackItemProtocol {
+struct DeviceNameItem: FeedbackItemProtocol {
     var deviceName: String {
         guard let path = Bundle.platformNamesPlistPath,
               let dictionary = NSDictionary(contentsOfFile: path) as? [String : String]
@@ -25,5 +25,7 @@ public struct DeviceNameItem: FeedbackItemProtocol {
         return result
     }
 
-    public let isHidden: Bool = false
+    let isHidden: Bool
+    
+    init(isHidden: Bool) { self.isHidden = isHidden }
 }
