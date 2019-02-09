@@ -22,7 +22,7 @@ class TopicsViewController: UITableViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        tableView.separatorStyle = .none
         title = CTLocalizedString("CTFeedback.Topics")
     }
 
@@ -48,6 +48,9 @@ extension TopicsViewController {
         let topic      = topics[indexPath.row]
         cell.textLabel?.text = topic.localizedTitle
         return cell
+    }
+    override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 40
     }
 }
 

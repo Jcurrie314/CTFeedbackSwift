@@ -19,6 +19,7 @@ extension TopicCell: CellFactoryProtocol {
                           for indexPath: IndexPath,
                           eventHandler: Any?) {
         cell.textLabel?.text = CTLocalizedString("CTFeedback.Topic")
+        cell.textLabel?.font = UIFont.systemFont(ofSize: 16, weight: .heavy)
         cell.detailTextLabel?.text = item.topicTitle
         cell.accessoryType = .disclosureIndicator
         cell.selectionStyle = .none
