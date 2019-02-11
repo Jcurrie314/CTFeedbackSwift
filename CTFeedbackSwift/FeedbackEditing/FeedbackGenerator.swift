@@ -6,12 +6,48 @@
 import Foundation
 
 struct FeedbackGenerator {
+    
     static func generate(configuration: FeedbackConfiguration, repository: FeedbackEditingItemsRepositoryProtocol) throws -> Feedback {
-        let deviceName = repository.item(of: DeviceNameItem.self)?.deviceName ?? ""
-        let systemVersion = repository.item(of: SystemVersionItem.self)?.version ?? ""
-        let appName    = repository.item(of: AppNameItem.self)?.name ?? ""
-        let appVersion = repository.item(of: AppVersionItem.self)?.version ?? ""
-        let appBuild   = repository.item(of: AppBuildItem.self)?.buildString ?? ""
+        var platform: String {
+            var mib: [Int32] = [CTL_HW, HW_MACHINE]
+            var len: Int     = 2
+            sysctl(&mib, 2, .none, &len, .none, 0)
+            var machine = [CChar](repeating: 0, count: Int(len))
+            sysctl(&mib, 2, &machine, &len, .none, 0)
+            let result = String(cString: machine)
+            return result
+        }
+        
+        var deviceName: String {
+            guard let path = Bundle.platformNamesPlistPath,
+                let dictionary = NSDictionary(contentsOfFile: path) as? [String : String]
+                else { return "" }
+            
+            let rawPlatform = platform
+            return dictionary[rawPlatform] ?? rawPlatform
+        }
+        
+        let systemVersion : String = UIDevice.current.systemVersion
+        var appName : String {
+            if let displayName = Bundle.main.object(forInfoDictionaryKey: "CFBundleDisplayName") as? String {
+                return displayName
+            }
+            if let bundleName = Bundle.main.object(forInfoDictionaryKey: "CFBundleName") as? String {
+                return bundleName
+            }
+            return ""
+        }
+        
+        var appVersion : String  {
+            guard let shortVersion = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String
+                else { return "" }
+            return shortVersion
+        }
+        var appBuild : String {
+            guard let build = Bundle.main.object(forInfoDictionaryKey: kCFBundleVersionKey as String) as? String
+                else { return "" }
+            return build
+        }
         let email      = repository.item(of: UserEmailItem.self)?.email
         let topic      = repository.item(of: TopicItem.self)?.selected
         let attachment = repository.item(of: AttachmentItem.self)?.media

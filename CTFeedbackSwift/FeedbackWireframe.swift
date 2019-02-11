@@ -46,6 +46,8 @@ extension FeedbackWireframe: FeedbackWireframeProtocol {
 
     func showMailComposer(with feedback: Feedback) {
         guard MFMailComposeViewController.canSendMail() else { return showMailConfigurationError() }
+        UINavigationBar.appearance().barTintColor = .white
+        UINavigationBar.appearance().tintColor = .black
         let controller: MFMailComposeViewController = MFMailComposeViewController()
         controller.mailComposeDelegate = mailComposerDelegate
         controller.setToRecipients(feedback.to)

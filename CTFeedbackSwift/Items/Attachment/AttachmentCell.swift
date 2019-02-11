@@ -11,8 +11,8 @@ protocol AttachmentCellEventProtocol {
 
 class AttachmentCell: UITableViewCell {
     private struct Const {
-        static let NoAttachedCellHeight: CGFloat = 44.0
-        static let AttachedCellHeight:   CGFloat = 65.0
+        static let NoAttachedCellHeight: CGFloat = 44
+        static let AttachedCellHeight:   CGFloat = 44
         static let Margin:               CGFloat = 15.0
     }
 
@@ -23,6 +23,7 @@ class AttachmentCell: UITableViewCell {
     private var attachmentImageViewHeightConstraint: NSLayoutConstraint?
     private var attachmentImageViewWidthConstraint:  NSLayoutConstraint?
 
+    private let backgroundV = UIView()
     private let attachmentLabel = UILabel()
     private var attachmentLabelLeadingWithImageViewConstraint:       NSLayoutConstraint?
     private var attachmentLabelLeadingWithContentViewViewConstraint: NSLayoutConstraint?
@@ -32,18 +33,19 @@ class AttachmentCell: UITableViewCell {
     override public init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
 
+        
+        
         attachmentImageView.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(attachmentImageView)
         attachmentImageView.isUserInteractionEnabled = true
-        attachmentImageViewHeightConstraint = attachmentImageView.heightAnchor
-            .constraint(equalToConstant: Const.NoAttachedCellHeight)
+        attachmentImageViewHeightConstraint = attachmentImageView.heightAnchor.constraint(equalToConstant: Const.NoAttachedCellHeight)
         attachmentImageViewHeightConstraint?.isActive = true
-        contentView.topAnchor.constraint(equalTo: attachmentImageView.topAnchor).isActive = true
-        contentView.bottomAnchor.constraint(equalTo: attachmentImageView.bottomAnchor).isActive = true
-        attachmentImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor,
-                                                     constant: Const.Margin).isActive = true
-        attachmentImageViewWidthConstraint = attachmentImageView.widthAnchor
-            .constraint(equalToConstant: 0.0)
+        
+
+        contentView.topAnchor.constraint(equalTo: attachmentImageView.topAnchor, constant: -10).isActive = true
+        contentView.bottomAnchor.constraint(equalTo: attachmentImageView.bottomAnchor, constant: 10).isActive = true
+        attachmentImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: Const.Margin).isActive = true
+        attachmentImageViewWidthConstraint = attachmentImageView.widthAnchor.constraint(equalToConstant: 0.0)
         attachmentImageViewWidthConstraint?.isActive = true
         attachmentImageView.addGestureRecognizer(tapImageViewGestureRecognizer)
         tapImageViewGestureRecognizer.addTarget(self, action: #selector(imageViewTapped(_:)))
@@ -52,18 +54,28 @@ class AttachmentCell: UITableViewCell {
         attachmentLabel.numberOfLines = 0
         contentView.addSubview(attachmentLabel)
         attachmentLabel.adjustsFontSizeToFitWidth = true
-        attachmentLabelLeadingWithImageViewConstraint
-        = attachmentLabel.leadingAnchor.constraint(equalTo: attachmentImageView.trailingAnchor,
-                                                   constant: Const.Margin)
-        attachmentLabelLeadingWithContentViewViewConstraint
-        = attachmentLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor,
-                                                   constant: Const.Margin)
-        contentView.trailingAnchor.constraint(equalTo: attachmentLabel.trailingAnchor,
-                                              constant: 0.0).isActive = true
+        attachmentLabelLeadingWithImageViewConstraint = attachmentLabel.leadingAnchor.constraint(equalTo: attachmentImageView.trailingAnchor, constant: Const.Margin)
+        attachmentLabelLeadingWithContentViewViewConstraint = attachmentLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 40)
+        contentView.trailingAnchor.constraint(equalTo: attachmentLabel.trailingAnchor, constant: 0.0).isActive = true
+
         contentView.centerYAnchor.constraint(equalTo: attachmentLabel.centerYAnchor).isActive = true
+        attachmentLabel.textColor = UIColor.white
+        attachmentLabel.font = UIFont.systemFont(ofSize: 14, weight: .bold)
         attachmentLabel.text = CTLocalizedString("CTFeedback.AttachImageOrVideo")
 
-        accessoryType = .disclosureIndicator
+        selectionStyle = .none
+        
+        backgroundV.translatesAutoresizingMaskIntoConstraints = false
+        contentView.addSubview(backgroundV)
+        backgroundV.leftAnchor.constraint(equalTo: contentView.leftAnchor, constant: 15).isActive = true
+        backgroundV.rightAnchor.constraint(equalTo: contentView.rightAnchor, constant: -15).isActive = true
+        backgroundV.topAnchor.constraint(equalTo: contentView.topAnchor).isActive = true
+        backgroundV.heightAnchor.constraint(equalTo: contentView.heightAnchor).isActive = true
+        backgroundV.layer.cornerRadius = 10
+        backgroundV.layer.borderWidth = 0
+        backgroundV.layer.borderColor = UIColor.white.cgColor
+        backgroundV.backgroundColor = UIColor.black.withAlphaComponent(0.15)
+
     }
 
     required init?(coder aDecoder: NSCoder) { super.init(coder: aDecoder) }
@@ -84,13 +96,15 @@ extension AttachmentCell: CellFactoryProtocol {
         cell.item = item
 
         cell.imageView?.image = item.image
+        cell.textLabel?.textColor = .white
+        cell.textLabel?.font = UIFont.systemFont(ofSize: 16, weight: .bold)
+        cell.backgroundColor = .clear
+
         if let heightConstraint = cell.attachmentImageViewHeightConstraint {
             heightConstraint.constant = item.attached ? Const.AttachedCellHeight : Const.NoAttachedCellHeight
 
             if let image = cell.imageView?.image {
-                cell.attachmentImageViewWidthConstraint?.constant = image.size.width
-                                                                    * heightConstraint.constant
-                                                                    / image.size.height
+                cell.attachmentImageViewWidthConstraint?.constant = image.size.width * heightConstraint.constant / image.size.height
                 cell.attachmentLabelLeadingWithContentViewViewConstraint?.isActive = false
                 cell.attachmentLabelLeadingWithImageViewConstraint?.isActive = true
             } else {
